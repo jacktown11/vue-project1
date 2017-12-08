@@ -25,6 +25,7 @@
       </div>
     </div>
     <div class="index-right">
+      <slide-show :slides="slides" :looptime="looptime"></slide-show>
       <div class="index-board-list">
         <div
          class="index-board-item" 
@@ -44,9 +45,12 @@
 </template>
 
 <script>
+import SlideShow from '../components/SlideShow.vue'
+
 export default {
   data () {
     return {
+      looptime: 1500,
       productList: {
         pc: {
           title: 'PC产品',
@@ -94,24 +98,7 @@ export default {
           ]
         }
       },
-      latestNews: [
-          {
-            title: '数据统计',
-            url: ''
-          },
-          {
-            title: '数据统计',
-            url: ''
-          },
-          {
-            title: '数据统计',
-            url: ''
-          },
-          {
-            title: '数据统计',
-            url: ''
-          }
-      ],
+      latestNews: [],
       boardList: [
         {
           title: '开放产品',
@@ -141,8 +128,42 @@ export default {
           toKey: 'publish',
           saleout: false
         }
-      ]
+      ],
+      slides: [
+        {
+          src: require('../assets/slideShow/pic1.jpg'),
+          title: 'picture1',
+          href: 'detail/analysis'
+        },
+        {
+          src: require('../assets/slideShow/pic2.jpg'),
+          title: 'picture2',
+          href: 'detail/count'
+        },
+        {
+          src: require('../assets/slideShow/pic3.jpg'),
+          title: 'picture3',
+          href: 'http://xxx.xxx.com'
+        },
+        {
+          src: require('../assets/slideShow/pic4.jpg'),
+          title: 'picture4',
+          href: 'detail/forecast'
+        }
+      ],
     }
+  },
+  components: {
+    SlideShow
+  },
+  created: function() {
+    this.$http.get('api/latestNews')
+    .then((res) => {
+      this.latestNews = res.data;
+      console.log(res.data);
+    },(err) => {
+      console.log(err);
+    });
   }
 }
 </script>
