@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import {eventHub} from '../../eventHub'
+
 export default {
 	props: {
 		selections: {
@@ -36,14 +38,22 @@ export default {
 		}
 	},
 	methods: {
-		toggleDrop () {
-			this.isDrop = !this.isDrop
+		toggleDrop (event) {
+			let oldStatus = this.isDrop
+			event.stopPropagation()
+			eventHub.$emit('close-up')
+			this.isDrop = !oldStatus
 		},
 		chooseSelection (newIndex) {
 			this.selectedIndex = newIndex
 			this.isDrop = false
 			this.$emit('on-change',this.selections[this.selectedIndex])
 		}
+	},
+	mounted () {
+		eventHub.$on('close-up', () => {
+			this.isDrop = false
+		})
 	}
 }
 </script>

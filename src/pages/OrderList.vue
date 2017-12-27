@@ -6,27 +6,26 @@
         选择产品：
         <v-selection :selections="products" @on-change="updatePruductType"></v-selection>
       </div>
-
       <div class="order-list-option datepicker-cmp">
         开始日期：
-        <v-date-picker v-model="params.startDate"></v-date-picker>
+        <v-date-picker v-model="para.startDate"></v-date-picker>
       </div>
 
       <div class="order-list-option datepicker-cmp">
         结束日期：
-        <v-date-picker v-model="params.endDate"></v-date-picker>         
+        <v-date-picker v-model="para.endDate"></v-date-picker>         
       </div>
 
       <div class="order-list-option">
         关键词：
-        <input type="text" v-model.lazy="params.queryStr" class="order-query">
+        <input type="text" v-model.lazy="para.queryStr" class="order-query">
       </div>
     </div>
     <div class="order-list-table">
       <table>
         <tr>
           <th v-for="item in tableHeads" 
-              @click="sortBy(item)" 
+              @click="updateSort(item)" 
               :class="{active: item.isActive}">{{item.label}}</th>
         </tr> 
         <tr v-for="item in shownOrders">
@@ -57,8 +56,8 @@ export default {
   },
   data () {
     return {
-      params: {
-        product: {},
+      para: {
+        product: '',
         startDate: new Date(),
         endDate: new Date(),
         queryStr: ''        
@@ -113,7 +112,6 @@ export default {
           key: 'amount'
         }
       ],
-      resultOrders: [],
       sortKey: '',
       sortType: 'asc',
       nowPage: 1,
@@ -121,9 +119,10 @@ export default {
     }
   },
   watch: {
-    params: {
+    para: {
       handler () {
-        this.newQuery()        
+        this.$store.commit('updateParams',this.para)
+        this.$store.dispatch('fetchOrderList')
       },
       deep: true
     }
@@ -132,88 +131,64 @@ export default {
     maxPage () {
       return Math.ceil(this.resultOrders.length / this.eachPageCount)
     },
+    resultOrders () {
+      return this.$store.getters.getOrderList
+    },
     shownOrders () {
+      let sortedOrders = this.resultOrders,
+          key = this.sortKey,
+          sortType = this.sortType,
+          nowPage = this.nowPage
+      sortedOrders = sortedOrders.sort((a, b) => {
+        let compare,
+            tmpA = String(a[key]),
+            tmpB = String(b[key])
+        switch (key) {
+          case 'period':
+            tmpA = ((tmpA.indexOf('年') > -1)?100:1) * Number(tmpA.replace(/\D/g, ''))
+            tmpB = ((tmpB.indexOf('年') > -1)?100:1) * Number(tmpB.replace(/\D/g, ''))
+            compare = tmpA - tmpB
+            break
+          case 'date': 
+            tmpA = tmpA.split('-').map((item) => {
+              return ('0' + item).slice(-2)
+            }).join('')
+            tmpB = tmpB.split('-').map((item) => {
+              return ('0' + item).slice(-2)
+            }).join('')
+            compare = Number(tmpA) - Number(tmpB) 
+            break
+          case 'buyNum':
+            compare = Number(tmpA) - Number(tmpB)
+            break
+          case 'amount':
+            compare = Number(tmpA.replace(/\D/g, '')) - 
+                      Number(tmpB.replace(/\D/g, ''))
+            break
+          default: 
+            compare = String(a[key]).localeCompare(String(b[key]))
+            break
+        }
+        return sortType === 'asc' ? compare : -compare
+      })
+
       let start = (this.nowPage-1) * this.eachPageCount
-      return this.resultOrders.slice(start, start + this.eachPageCount)
+      return sortedOrders.slice(start, start + this.eachPageCount)
     }
   },
   methods: {
-    updatePruductType (value) {
-      this.product = value
+    updatePruductType (productItem) {
+      this.para.product = productItem.value
     },
-    newQuery () {
-      // reset for showing new data
-      this.nowPage = 1
+    updateSort (headItem) {
+      this.sortKey = headItem.key
+      this.sortType = this.sortType === 'asc'? 'desc' : 'asc'
       this.tableHeads.forEach((item) => {
-        item.isActive = false
-      })
-
-      // request new data
-      let reqPara = {
-        productType: this.params.product.value,
-        startDate: this.params.startDate,
-        endDate: this.params.startDate,
-        queryStr: this.params.queryStr
-      }
-      this.$http.post('/api/getOrderList')
-      .then((res) => {
-        this.resultOrders = res.data.orderList
-      }, (err) => {
-        console.log(err)
-      })
-    },
-    sortBy (headItem) {
-      let key = headItem.key
-
-      // let the selected column's head highlighted
-      this.tableHeads.forEach((item) => {
-        item.isActive = false
+        if(item.key !== this.sortKey){
+          item.isActive = false       
+        } 
       })
       headItem.isActive = true
-
-      //sort the resultOrders by the headItem
-      if(this.sortKey !== key){
-        // new sort column, defaultly use increase sort
-        this.sortKey = key
-        let sortType = this.sortType = 'asc'
-
-        this.resultOrders = this.resultOrders.sort((a, b) => {
-          let compare,
-              tmpA = String(a[key]),
-              tmpB = String(b[key])
-          switch (key) {
-            case 'period':
-              tmpA = ((tmpA.indexOf('年') > -1)?100:1) * Number(tmpA.replace(/\D/g, ''))
-              tmpB = ((tmpB.indexOf('年') > -1)?100:1) * Number(tmpB.replace(/\D/g, ''))
-              compare = tmpA - tmpB
-              break
-            case 'date': 
-              tmpA = tmpA.split('-').map((item) => {
-                return ('0' + item).slice(-2)
-              }).join('')
-              tmpB = tmpB.split('-').map((item) => {
-                return ('0' + item).slice(-2)
-              }).join('')
-              compare = Number(tmpA) - Number(tmpB) 
-              break
-            case 'buyNum':
-              compare = Number(tmpA) - Number(tmpB)
-              break
-            case 'amount':
-              compare = Number(tmpA.replace(/\D/g, '')) - 
-                        Number(tmpB.replace(/\D/g, ''))
-              break
-            default: 
-              compare = String(a[key]).localeCompare(String(b[key]))
-              break
-          }
-          return sortType === 'asc' ? compare : -compare
-        })
-      } else {
-        // old sort column, reverse the list
-        this.sortType = this.sortType === 'asc'? 'desc' : 'asc'
-        this.resultOrders = this.resultOrders.reverse()
-      }
     },
     goToPage (page) {
       this.nowPage = page
@@ -230,8 +205,8 @@ export default {
     }
   },
   mounted () {
-    this.params.product = this.products[0]
-    this.newQuery()
+    this.para.product = this.products[0].value
+    // as para is modified, a data query action will dispatched in this.$watch.para
   }
 }
 </script>

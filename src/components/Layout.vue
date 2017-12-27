@@ -1,11 +1,12 @@
 <template>
-  <div>
+  <div @click="resetComponent">
     <div class="app-head">
       <div class="app-head-inner">
         <router-link :to="{path: '/'}">
           <img src="../assets/logo.png">      
         </router-link>
-
+        <a class="new-page" href="/detail">产品购买页面</a>
+        <a class="new-page" href="/orderList">订单列表页面</a>
         <div class="head-nav">
           <ul class="nav-list">
             <li v-if="!!name">{{name}}</li>
@@ -43,6 +44,7 @@
 import MyDialog from './base/MyDialog.vue'
 import LogForm from './LogForm.vue'
 import RegForm from './RegForm.vue'
+import {eventHub} from '../eventHub'
 
 export default {
   data () {
@@ -77,6 +79,9 @@ export default {
     },
     logOut () {
       this.name = ''
+    },
+    resetComponent () {
+      eventHub.$emit('close-up')
     }
   }
 }
@@ -152,13 +157,19 @@ body {
 .app-head-inner {
   width: 1200px;
   margin: 0 auto;
+  height: 90px;
 }
 .head-logo {
   float: left;
 }
-.app-head-inner img {
-  width: 50px;
-  margin-top: 20px;
+.app-head-inner img{
+  height: 50px;
+  position: relative;
+  top: 16px;
+}
+.new-page{
+  font-size: 120%;
+  margin-left: 25px;
 }
 .head-nav {
   float: right;
