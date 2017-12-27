@@ -7,7 +7,7 @@ import VueResource from 'vue-resource'
 
 Vue.config.productionTip = false
 
-Vue.use(VueResource);
+Vue.use(VueResource)
 
 /* eslint-disable no-new */
 new Vue({

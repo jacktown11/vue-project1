@@ -43,39 +43,39 @@ export default {
   },
   computed: {
     prevSlide () {
-      if(this.nowIndex === 0){
-        return this.slides.length - 1;
-      }else{
-        return this.nowIndex - 1;
+      if (this.nowIndex === 0) {
+        return this.slides.length - 1
+      } else {
+        return this.nowIndex - 1
       }
     },
     nextSlide () {
-      if(this.nowIndex === this.slides.length - 1){
-        return 0;
-      }else{
-        return this.nowIndex + 1;
+      if (this.nowIndex === this.slides.length - 1) {
+        return 0
+      } else {
+        return this.nowIndex + 1
       }
     }
   },
   methods: {
     goto (index) {
-      this.isShow = false;
+      this.isShow = false
       setTimeout(() => {
-        this.isShow = true;
-        this.nowIndex = index;
-      },10)
+        this.isShow = true
+        this.nowIndex = index
+      }, 10)
     },
     startAutoRun () {
       this.intervalId = setInterval(() => {
-        this.goto(this.nextSlide);
-      },this.looptime)
+        this.goto(this.nextSlide)
+      }, this.looptime)
     },
     stopAutoRun () {
-      clearInterval(this.intervalId);
+      clearInterval(this.intervalId)
     }
   },
   mounted () {
-    this.startAutoRun();
+    this.startAutoRun()
   }
 }
 </script>
