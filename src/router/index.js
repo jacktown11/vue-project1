@@ -9,13 +9,14 @@ import DetailPublishPage from '../pages/detail/publish'
 import OrderList from '../pages/OrderList'
 
 Vue.use(Router)
-const devRootPath = '/'
-const prodRootPath  = '/projects/vue-project1/dist/'
 
-let path = prodRootPath
+const devRootPath = '/'
+const ghPagesRootPath  = '/vue-project1/'
+
+let path = devRootPath
 
 export default new Router({
-  mode: 'history',
+  // mode: 'history',
   routes: [
     {
       path: path + '',
