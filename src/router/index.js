@@ -9,20 +9,24 @@ import DetailPublishPage from '../pages/detail/publish'
 import OrderList from '../pages/OrderList'
 
 Vue.use(Router)
+const devRootPath = '/'
+const prodRootPath  = '/projects/vue-project1/dist/'
+
+let path = prodRootPath
 
 export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/projects/vue-project1/dist',
+      path: path + '',
       name: 'Layout',
       component: IndexPage
     },
     {
-    	path: '/projects/vue-project1/dist/detail',
+    	path: path + 'detail',
       name: 'Detail',
     	component: DetailPage,
-      redirect: '/projects/vue-project1/dist/detail/analysis',
+      redirect: path + 'detail/analysis',
       children: [
         {
           path: 'analysis',
@@ -47,7 +51,7 @@ export default new Router({
       ]
     },
     {
-      path: '/projects/vue-project1/dist/orderList',
+      path: path + 'orderList',
       name: 'OrderList',
       component: OrderList
     }
