@@ -2,11 +2,11 @@
   <div @click="resetComponent">
     <div class="app-head">
       <div class="app-head-inner">
-        <router-link :to="{path: '/'}">
+        <router-link :to="{name: 'Layout'}">
           <img src="../assets/logo.png">      
         </router-link>
-        <a class="new-page" href="/detail">产品购买页面</a>
-        <a class="new-page" href="/orderList">订单列表页面</a>
+        <router-link class="new-page" :to="{name: 'Detail'}">产品购买页面</router-link>
+        <router-link class="new-page" :to="{name: 'OrderList'}">订单列表页面</router-link>
         <div class="head-nav">
           <ul class="nav-list">
             <li v-if="!!name">{{name}}</li>

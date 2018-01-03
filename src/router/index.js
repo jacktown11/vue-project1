@@ -14,35 +14,41 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/',
+      path: '/projects/vue-project1/dist',
       name: 'Layout',
       component: IndexPage
     },
     {
-    	path: '/detail',
+    	path: '/projects/vue-project1/dist/detail',
+      name: 'Detail',
     	component: DetailPage,
-      redirect: '/detail/analysis',
+      redirect: '/projects/vue-project1/dist/detail/analysis',
       children: [
         {
           path: 'analysis',
+          name: 'Analysis',
           component: DetailAnalysisPage
         },
         {
           path: 'count',
+          name: 'Count',
           component: DetailCountPage
         },
         {
           path: 'forecast',
+          name: 'Forecast',
           component: DetailForecastPage
         },
         {
           path: 'publish',
+          name: 'Publish',
           component: DetailPublishPage
         }
       ]
     },
     {
-      path: '/orderlist',
+      path: '/projects/vue-project1/dist/orderList',
+      name: 'OrderList',
       component: OrderList
     }
   ]
