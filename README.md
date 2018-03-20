@@ -1,6 +1,6 @@
 # vue-project1
 
-> A Vue.js project
+跟随视频教程，使用`vue-cli`脚手架搭建的`Vue`项目,使用了**vue + vuex + vue-router + vue-resource**,利用`Express`框架来进行数据请求模拟。
 
 ## Build Setup
 
